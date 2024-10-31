@@ -29,7 +29,7 @@
                             @endphp
                             @if(isset($films) && count($films) > 0)
                                 @foreach ($films as $film)
-                                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden border border-gray-200 dark:border-gray-700 hover:shadow-xl transition duration-300 ease-in-out transform hover:-translate-y-1">
+                                    <a href="{{ url('/filmdetail?id=' . $film->filmId) }}" class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden border border-gray-200 dark:border-gray-700 hover:shadow-xl transition duration-300 ease-in-out transform hover:-translate-y-1 cursor-pointer">
                                         <div class="p-6">
                                             <h3 class="text-xl font-bold text-[#ff2d20] dark:text-[#ff2d20] mb-2">{{ $film->title }}</h3>
                                             <div class="text-sm text-gray-600 dark:text-gray-400 mb-4">ID: {{ $film->filmId }}</div>
@@ -53,7 +53,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    </a>
                                 @endforeach
                             @else
                                 <div class="col-span-3 text-center text-gray-500 dark:text-gray-400 py-8">
