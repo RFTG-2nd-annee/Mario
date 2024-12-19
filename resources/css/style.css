@@ -1,0 +1,266 @@
+:root {
+    --background-color: #f0f4f8;
+    --text-color: #2d3748;
+    --app-background: #fff;
+    --app-shadow: rgba(0,0,0,.1);
+    --input-border: #cbd5e0;
+    --button-bg: #4299e1;
+    --button-text: #fff;
+    --table-border: #e2e8f0;
+    --table-header-bg: #4299e1;
+    --table-header-text: #fff;
+    --table-even-row: #edf2f7;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', system-ui, -apple-system, sans-serif;
+    background: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.8;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2.5rem 1.25rem;
+}
+
+h1, h2, h3 {
+    color: var(--text-color);
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+h1 { font-size: clamp(2em, 5vw, 3em); }
+h2 { font-size: clamp(1.5em, 4vw, 2.5em); }
+h3 { font-size: clamp(1.2em, 3vw, 2em); }
+
+.app-section {
+    background: var(--app-background);
+    border-radius: 1.25rem;
+    padding: 3.125rem;
+    margin-bottom: 3.75rem;
+    box-shadow: 0 .9375rem 2.1875rem var(--app-shadow);
+    will-change: transform;
+}
+
+.app-title {
+    color: var(--button-bg);
+    border-bottom: 4px solid var(--button-bg);
+    padding-bottom: 20px;
+    margin-bottom: 50px;
+    text-align: center;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    contain: content;
+}
+
+.film-card {
+    background-color: var(--app-background);
+    border-radius: 12px;
+    box-shadow: 0 5px 15px var(--app-shadow);
+    padding: 20px;
+    cursor: pointer;
+    transform: translateZ(0);
+    will-change: transform;
+    transition: transform 0.3s ease;
+}
+
+.film-card:hover {
+    transform: translateY(-5px);
+}
+
+.film-title {
+    color: var(--button-bg);
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.film-details {
+    color: var(--text-color);
+    margin-bottom: 10px;
+}
+
+.film-label {
+    font-weight: 600;
+    color: var(--button-bg);
+    margin-right: 5px;
+    font-size: 0.9em;
+}
+
+.controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+    gap: 1rem;
+}
+
+.search-container {
+    position: relative;
+    display: inline-block;
+}
+
+.search-bar, .sort-select {
+    padding: .625rem;
+    border: 1px solid var(--input-border);
+    border-radius: .3125rem;
+}
+
+.search-bar {
+    width: 36.875rem;
+    margin-right: .625rem;
+}
+
+.search-bar:focus, .sort-select:focus {
+    outline: none;
+    border-color: var(--button-bg);
+}
+
+.sort-select {
+    background: var(--button-bg);
+    color: var(--button-text);
+    cursor: pointer;
+}
+
+.clear-search {
+    position: absolute;
+    right: .9375rem;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: var(--text-color);
+    font-weight: bold;
+    padding: .3125rem;
+    transition: opacity .2s;
+}
+
+.clear-search:hover {
+    opacity: .7;
+}
+
+.button {
+    background: var(--button-bg);
+    color: var(--button-text);
+    padding: .625rem 1.25rem;
+    border: 0;
+    border-radius: .3125rem;
+    cursor: pointer;
+    margin: .3125rem;
+    transition: opacity .2s;
+}
+
+.button:hover {
+    opacity: .9;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    gap: 5px;
+}
+
+.pagination a {
+    padding: 10px 15px;
+    border: 1px solid var(--table-border);
+    border-radius: 5px;
+    text-decoration: none;
+    color: var(--text-color);
+    transition: background-color 0.3s;
+}
+
+.pagination a:hover {
+    background-color: var(--button-bg);
+    color: var(--button-text);
+}
+
+.bottom-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.rental-stats table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1.25rem;
+}
+
+.rental-stats th, .rental-stats td {
+    border: 1px solid var(--table-border);
+    padding: .75rem;
+    text-align: left;
+}
+
+.rental-stats th {
+    background: var(--table-header-bg);
+    color: var(--table-header-text);
+    position: relative;
+}
+
+.rental-stats th::after {
+    content: '↕';
+    position: absolute;
+    right: .5rem;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.rental-stats th.asc::after { content: '↑'; }
+.rental-stats th.desc::after { content: '↓'; }
+.rental-stats tr:nth-child(even) { background: var(--table-even-row); }
+
+input[type="number"], input[type="date"] {
+    padding: .5rem;
+    border: 1px solid var(--input-border);
+    border-radius: .25rem;
+    background: var(--app-background);
+    color: var(--text-color);
+    font-size: .875rem;
+    margin: 0 .5rem;
+}
+
+input[type="number"]:focus, input[type="date"]:focus {
+    outline: none;
+    border-color: var(--button-bg);
+    box-shadow: 0 0 0 2px rgba(66,153,225,.2);
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .film-card {
+        transition: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .container { padding: 1rem; }
+    .app-section { padding: 1.5rem; }
+    .search-bar { width: 100%; }
+    .controls { flex-direction: column; }
+    input[type="number"], input[type="date"] { 
+        width: 100%;
+        margin: .5rem 0;
+    }
+    .sort-select { width: 100%; }
+}

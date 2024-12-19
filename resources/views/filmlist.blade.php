@@ -1,111 +1,86 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Liste des films') }}
-        </h2>
-    </x-slot>
+<!DOCTYPE html>
+<html lang="fr"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RFTG - Liste des films</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">   
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet"></noscript>
+    <link rel="stylesheet" href="./style.css"></style>
+</head><body>
+    <div class="container">
+        <h1>RFTG - Liste des films</h1>
+        <div class="app-section">
+            <h2 class="app-title">Voici la liste des films disponibles</h2>
+            <x-research-component :page="'filmlist'" />
+            <div class="grid">
+                @php
+                    $currentPage = request()->get('page', 1); $sort = request('sort', 'title_asc');
+                    $search = request('search', ''); $start_year = request('start_year', '2006');
+                    $end_year = request('end_year', date('Y'));
+                    
+                    if($start_year > $end_year) {
+                        echo "<div class='alert alert-danger'>L'année de début ne peut pas être supérieure à l'année de fin</div>";
+                    } else {
+                        $ch = curl_init();
+                        curl_setopt_array($ch, [
+                            CURLOPT_URL => 'http://localhost:8080/toad/film/page?page=' . $currentPage . 
+                                         '&sort=' . $sort . '&search=' . urlencode($search) .
+                                         '&start_year=' . urlencode($start_year) . '&end_year=' . urlencode($end_year),
+                            CURLOPT_RETURNTRANSFER => true, CURLOPT_CONNECTTIMEOUT => 3, CURLOPT_TIMEOUT => 5
+                        ]);
+                        $response = curl_exec($ch); curl_close($ch);
+                        $data = json_decode($response, false); $films = $data->films ?? [];
+                        if (!empty($search)) {
+                            $films = array_filter($films, fn($film) => stripos($film->title, $search) !== false);
+                        }
+                        $totalPages = $data->totalPages ?? 0; $totalFilms = $data->totalFilms ?? 0;
+                    }
+                @endphp
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl rounded-lg border border-gray-200 dark:border-gray-700">
-                <div class="p-8 text-gray-900 dark:text-gray-100">
-                    <br>
-                    <br>
-                    <h1 class="text-3xl font-bold mb-12 text-[#ff2d20] dark:text-[#ff2d20] text-center mx-auto my-8">{{ __("Voici la liste des films disponibles.") }}</h1>
-                    <br>
-
-                    <br>
-
-                    <div class="overflow-x-auto mx-8">
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" style="margin: 20px;">
-                            @php
-                                $currentPage = request()->get('page', 1);
-                                $perPage = 9; // Changé à 9 pour un meilleur affichage en grille
-                                $response = file_get_contents('http://localhost:8080/toad/film/all');
-                                $films = json_decode($response);
-                                $totalFilms = count($films);
-                                $totalPages = ceil($totalFilms / $perPage);
-                                $films = array_slice($films, ($currentPage - 1) * $perPage, $perPage);
-                            @endphp
-                            @if(isset($films) && count($films) > 0)
-                                @foreach ($films as $film)
-                                    <a href="{{ url('/filmdetail?id=' . $film->filmId) }}" class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden border border-gray-200 dark:border-gray-700 hover:shadow-xl transition duration-300 ease-in-out transform hover:-translate-y-1 cursor-pointer">
-                                        <div class="p-6">
-                                            <h3 class="text-xl font-bold text-[#ff2d20] dark:text-[#ff2d20] mb-2">{{ $film->title }}</h3>
-                                            <div class="text-sm text-gray-600 dark:text-gray-400 mb-4">ID: {{ $film->filmId }}</div>
-                                            <p class="text-gray-700 dark:text-gray-300 mb-4 line-clamp-3">{{ $film->description }}</p>
-                                            <div class="grid grid-cols-2 gap-4 text-sm">
-                                                <div>
-                                                    <span class="font-semibold">Année:</span>
-                                                    <span class="text-gray-600 dark:text-gray-400">{{ $film->releaseYear }}</span>
-                                                </div>
-                                                <div>
-                                                    <span class="font-semibold">Durée location:</span>
-                                                    <span class="text-gray-600 dark:text-gray-400">{{ $film->rentalDuration }} jours</span>
-                                                </div>
-                                                <div>
-                                                    <span class="font-semibold">Tarif:</span>
-                                                    <span class="text-gray-600 dark:text-gray-400">{{ $film->rentalRate }}€</span>
-                                                </div>
-                                                <div>
-                                                    <span class="font-semibold">Évaluation:</span>
-                                                    <span class="text-gray-600 dark:text-gray-400">{{ $film->rating }}</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </a>
-                                @endforeach
-                            @else
-                                <div class="col-span-3 text-center text-gray-500 dark:text-gray-400 py-8">
-                                    Aucun film disponible
-                                </div>
+                @forelse ($films as $film)
+                    <div class="film-card" onclick="window.location='{{ url('/filmdetail?id=' . $film->filmId) }}'">
+                        <h3 class="film-title">{{ $film->title }}</h3>
+                        <p class="film-details line-clamp-3">{{ $film->description }}</p>
+                        <div class="film-details">
+                            <span class="film-label">Année:</span> {{ $film->releaseYear }}<br>
+                            <span class="film-label">Durée location:</span> {{ $film->rentalDuration }} jours<br>
+                            <span class="film-label">Tarif:</span> {{ $film->rentalRate }}€<br>
+                            <span class="film-label">Évaluation:</span> {{ $film->rating }}<br>
+                            <span class="film-label">Durée:</span> {{ $film->length }} minutes<br>
+                            <span class="film-label">Coût de remplacement:</span> {{ $film->replacementCost }}€<br>
+                            @if(!empty($film->specialFeatures))
+                                <span class="film-label">Bonus:</span> {{ $film->specialFeatures }}
                             @endif
                         </div>
                     </div>
-                    <div class="mt-6 flex justify-center">
-                        <nav class="relative z-0 inline-flex shadow-sm rounded-md">
-                            @if($currentPage > 1)
-                            <a href="?page=1" class="relative inline-flex items-center px-4 py-2 rounded-l-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 transition ease-in-out duration-150">
-                                &lt;&lt;
-                            </a>
-                            <a href="?page={{ $currentPage - 1 }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 transition ease-in-out duration-150">
-                                &lt;
-                            </a>
-                            @endif
-
-                            @php
-                                $start = max(1, min($currentPage - 2, $totalPages - 4));
-                                $end = min($totalPages, max(5, $currentPage + 2));
-                            @endphp
-
-                            @for ($i = $start; $i <= $end; $i++)
-                                <a href="?page={{ $i }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 {{ $i == $currentPage ? 'bg-[#ff2d20] text-white border-[#ff2d20]' : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600' }} text-sm font-medium transition ease-in-out duration-150">
-                                    {{ $i }}
-                                </a>
-                            @endfor
-
-                            @if($end < $totalPages)
-                                <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium text-gray-700 dark:text-gray-200">...</span>
-                            @endif
-
-                            @if($currentPage < $totalPages)
-                            <a href="?page={{ $currentPage + 1 }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 transition ease-in-out duration-150">
-                                &gt;
-                            </a>
-                            <a href="?page={{ $totalPages }}" class="relative inline-flex items-center px-4 py-2 rounded-r-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 transition ease-in-out duration-150">
-                                &gt;&gt;
-                            </a>
-                            @endif
-                        </nav>
+                @empty
+                    <div class="col-span-3 text-center text-gray-500 dark:text-gray-400 py-8">
+                        Aucun film disponible pour ces critères de recherche
                     </div>
-                    <br>
-
-                    <br>
-
-                    <br>
-
-                </div>
+                @endforelse
             </div>
+            @if($totalPages > 0)
+                <div class="bottom-controls">
+                    <div class="pagination">
+                        @if($currentPage > 1)
+                            <a href="?page=1&sort={{ $sort }}&search={{ $search }}&start_year={{ $start_year }}&end_year={{ $end_year }}">&lt;&lt;</a>
+                            <a href="?page={{ $currentPage - 1 }}&sort={{ $sort }}&search={{ $search }}&start_year={{ $start_year }}&end_year={{ $end_year }}">&lt;</a>
+                        @endif
+                        @for ($i = max(1, $currentPage - 2); $i <= min($totalPages, $currentPage + 2); $i++)
+                            <a href="?page={{ $i }}&sort={{ $sort }}&search={{ $search }}&start_year={{ $start_year }}&end_year={{ $end_year }}" 
+                               class="{{ $i == $currentPage ? 'active' : '' }}">{{ $i }}</a>
+                        @endfor
+                        @if($currentPage < $totalPages)
+                            <a href="?page={{ $currentPage + 1 }}&sort={{ $sort }}&search={{ $search }}&start_year={{ $start_year }}&end_year={{ $end_year }}">&gt;</a>
+                            <a href="?page={{ $totalPages }}&sort={{ $sort }}&search={{ $search }}&start_year={{ $start_year }}&end_year={{ $end_year }}">&gt;&gt;</a>
+                        @endif
+                    </div>
+                    <button class="filter-button button" onclick="window.location.href='/rentalstats'">
+                        Afficher les détails de locations
+                    </button>
+                </div>
+            @endif
         </div>
     </div>
-</x-app-layout>
+</body></html>

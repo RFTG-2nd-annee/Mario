@@ -1,103 +1,162 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Détail du film') }}
-        </h2>
-    </x-slot>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RFTG - Détails du Film</title>
+    <style>
+        /* Réinitialisation et styles de base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl rounded-lg border border-gray-200 dark:border-gray-700">
-                <div class="p-8 text-gray-900 dark:text-gray-500">
-                    <h1 class="text-4xl font-bold text-[#ff2d20] dark:text-[#ff2d20] text-center mb-12" style="margin: 20px;">
-                        {{ __("Détails du film") }}
-                    </h1>
+        :root {
+            --background-color: #f0f4f8;
+            --text-color: #2d3748;
+            --app-background: #ffffff;
+            --app-shadow: rgba(0,0,0,0.1);
+            --input-border: #cbd5e0;
+            --button-bg: #4299e1;
+            --button-text: white;
+        }
 
-                    <div class="max-w-3xl mx-auto" style="margin: 30px;">
-                        @php
-                            $filmId = request()->get('id');
-                            $response = file_get_contents("http://localhost:8080/toad/film/getById?id={$filmId}");
-                            $film = json_decode($response);
-                        @endphp
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.8;
+            transition: all 0.5s ease;
+        }
 
-                        @if(isset($film))
-                            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 space-y-8"  style="margin: 20px;">
-                                <div class="text-center mb-8" style="margin: 20px;">
-                                    <input type="text" value="{{ $film->title }}" disabled style="border-radius: 10px;">
-                                </div>
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
 
-                                <div class="space-y-6">
-                                    <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-6" style="border-radius: 10px;">
-                                        <h4 class="text-xl font-bold mb-4 text-[#ff2d20] dark:text-[#ff20]">Synopsis</h4>
-                                        <textarea disabled class="w-full min-h-[100px] bg-white dark:bg-gray-600 rounded-lg p-4 resize-none text-gray-900 dark:text-gray-500">{{ $film->description }}</textarea>
-                                    </div>
+        h1 {
+            color: var(--text-color);
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 700;
+            font-size: 3em;
+        }
 
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-6" style="border-radius: 10px;">
-                                            <h4 class="text-xl font-bold mb-4 text-[#ff2d20] dark:text-[#ff2d20]">Informations générales</h4>
-                                            <div class="space-y-4">
-                                                <div class="flex items-center justify-between">
-                                                    <label class="font-medium">Année de sortie</label>
-                                                    <input type="text" value="{{ $film->releaseYear }}" disabled 
-                                                        class="w-32 bg-white dark:bg-gray-600 rounded-lg px-3 py-2 text-right text-gray-900 dark:text-gray-500">
-                                                </div>
-                                                <div class="flex items-center justify-between">
-                                                    <label class="font-medium">Durée</label>
-                                                    <input type="text" value="{{ $film->length }} minutes" disabled 
-                                                        class="w-32 bg-white dark:bg-gray-600 rounded-lg px-3 py-2 text-right text-gray-900 dark:text-gray-500">
-                                                </div>
-                                                <div class="flex items-center justify-between">
-                                                    <label class="font-medium">Classification</label>
-                                                    <input type="text" value="{{ $film->rating }}" disabled 
-                                                        class="w-32 bg-white dark:bg-gray-600 rounded-lg px-3 py-2 text-right text-gray-900 dark:text-gray-500">
-                                                </div>
-                                            </div>
-                                        </div>
+        .film-detail {
+            background-color: var(--app-background);
+            border-radius: 20px;
+            padding: 50px;
+            margin-bottom: 60px;
+            box-shadow: 0 15px 35px var(--app-shadow);
+        }
 
-                                        <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-6" style="border-radius: 10px;">
-                                            <h4 class="text-xl font-bold mb-4 text-[#ff2d20] dark:text-[#ff2d20]">Informations de location</h4>
-                                            <div class="space-y-4">
-                                                <div class="flex items-center justify-between">
-                                                    <label class="font-medium">Durée de location</label>
-                                                    <input type="text" value="{{ $film->rentalDuration }} jours" disabled 
-                                                        class="w-32 bg-white dark:bg-gray-600 rounded-lg px-3 py-2 text-right text-gray-900 dark:text-gray-500">
-                                                </div>
-                                                <div class="flex items-center justify-between">
-                                                    <label class="font-medium">Tarif de location</label>
-                                                    <input type="text" value="{{ $film->rentalRate }}€" disabled 
-                                                        class="w-32 bg-white dark:bg-gray-600 rounded-lg px-3 py-2 text-right text-gray-900 dark:text-gray-500">
-                                                </div>
-                                                <div class="flex items-center justify-between">
-                                                    <label class="font-medium">Coût de remplacement</label>
-                                                    <input type="text" value="{{ $film->replacementCost }}€" disabled 
-                                                        class="w-32 bg-white dark:bg-gray-600 rounded-lg px-3 py-2 text-right text-gray-900 dark:text-gray-500">
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+        .film-title {
+            font-size: 2.5em;
+            color: var(--button-bg);
+            text-align: center;
+            margin-bottom: 20px;
+        }
 
-                                    @if($film->specialFeatures)
-                                        <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-6" style="border-radius: 10px;">
-                                            <h4 class="text-xl font-bold mb-4 text-[#ff2d20] dark:text-[#ff2d20]">Fonctionnalités spéciales</h4>
-                                            <input type="text" value="{{ $film->specialFeatures }}" disabled 
-                                                class="w-full bg-white dark:bg-gray-600 rounded-lg px-3 py-2 text-gray-900 dark:text-gray-500">
-                                        </div>
-                                    @endif
-                                   
-                                </div>
-                            </div>
-                            <br>
-                            <a href="http://localhost:8000/filmlist" class="inline-block bg-[#007bff] text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-blue-700 transition duration-300 transform hover:scale-105 mr-4 float-right" style="background:  #3498DB;padding: 10px;margin: 20px;">
-                                Retour à la liste des films
-                            </a>
-                        @else
-                            <div class="text-center p-10 bg-gray-50 dark:bg-gray-700 rounded-xl" style="border-radius: 10px;">
-                                <p class="text-xl text-gray-500 dark:text-gray-400">Film non trouvé</p>
-                            </div>
-                        @endif
+        .info-section {
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .info-section h4 {
+            color: var(--button-bg);
+            margin-bottom: 10px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid var(--input-border);
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .button {
+            background-color: var(--button-bg);
+            color: var(--button-text);
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+        }
+
+        .button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>{{ __("Détails du film") }}</h1>
+
+        <div class="film-detail">
+            @php
+                $filmId = request()->get('id');
+                $response = file_get_contents("http://localhost:8080/toad/film/getById?id={$filmId}");
+                $film = json_decode($response);
+            @endphp
+
+            @if(isset($film))
+                <div class="info-section">
+                    <h4 class="film-title">{{ $film->title }}</h4>
+                    <input type="text" value="{{ $film->description }}" disabled>
+                </div>
+
+                <div class="info-section">
+                    <h4>Informations générales</h4>
+                    <div>
+                        <label>Année de sortie:</label>
+                        <input type="text" value="{{ $film->releaseYear }}" disabled>
+                    </div>
+                    <div>
+                        <label>Durée:</label>
+                        <input type="text" value="{{ $film->length }} minutes" disabled>
+                    </div>
+                    <div>
+                        <label>Classification:</label>
+                        <input type="text" value="{{ $film->rating }}" disabled>
                     </div>
                 </div>
-            </div>
+
+                <div class="info-section">
+                    <h4>Informations de location</h4>
+                    <div>
+                        <label>Durée de location:</label>
+                        <input type="text" value="{{ $film->rentalDuration }} jours" disabled>
+                    </div>
+                    <div>
+                        <label>Tarif de location:</label>
+                        <input type="text" value="{{ $film->rentalRate }}€" disabled>
+                    </div>
+                    <div>
+                        <label>Coût de remplacement:</label>
+                        <input type="text" value="{{ $film->replacementCost }}€" disabled>
+                    </div>
+                </div>
+
+                @if($film->specialFeatures)
+                    <div class="info-section">
+                        <h4>Fonctionnalités spéciales</h4>
+                        <input type="text" value="{{ $film->specialFeatures }}" disabled>
+                    </div>
+                @endif
+
+                <a href="http://localhost:8000/filmlist" class="button">Retour à la liste des films</a>
+            @else
+                <div class="text-center">
+                    <p>Film non trouvé</p>
+                </div>
+            @endif
         </div>
     </div>
-</x-app-layout>
+</body>
+</html>
